@@ -287,10 +287,8 @@ class ShopwareBackend(models.Model):
         if domain is None:
             domain = []
         backends = self.search(domain)
-        for backend in backends:
-            if backend:
-                value = getattr(backend, callback)
-                value()
+        if backends:
+            getattr(backends, callback)()
 
     @api.model
     def _scheduler_import_sale_orders(self, domain=None):

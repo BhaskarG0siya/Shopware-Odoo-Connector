@@ -491,12 +491,12 @@ class BaseAddressImportMapper(ImportMapper):
 
     @mapping
     def title(self, record):
-        prefix = record['prefix']
+        prefix = record['salutation']
+        prefix += '.'   # All prefix ends with '.' in model
         if not prefix:
             return
         title = self.env['res.partner.title'].search(
-            [('domain', '=', 'contact'),
-             ('shortcut', '=ilike', prefix)],
+            [('shortcut', '=ilike', prefix)],
             limit=1
         )
         if not title:
@@ -563,9 +563,11 @@ class AddressAdapter(GenericAdapter):
 
         :rtype: list
         """
-        return [int(row['customer_address_id']) for row
-                in self._call('%s.list' % self._shopware_model,
-                              [filters] if filters else [{}])]
+        return self._call('%s.Search' % self._shopware_model,[filters] if filters else [{}])
+        # It will give list of ids just like before but optimized
+        # return [int(row['customer_address_id']) for row
+        #         in self._call('%sSearch' % self._shopware_model,
+        #                       [filters] if filters else [{}])]
 
     def create(self, customer_id, data):
         """ Create a record on the external system """

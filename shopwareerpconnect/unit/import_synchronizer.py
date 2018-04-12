@@ -168,6 +168,8 @@ class ShopwareImporter(Importer):
         # special check on data before import
         self._validate_data(data)
         model = self.model.with_context(connector_no_export=True)
+        if data.get('customer',False):  # If record is customer's then type must be contact
+            data.update({'type':'contact'})
         binding = model.create(data)
         _logger.debug('%d created from shopware %s', binding, self.shopware_id)
         return binding
@@ -179,6 +181,8 @@ class ShopwareImporter(Importer):
         """ Update an OpenERP record """
         # special check on data before import
         self._validate_data(data)
+        if 'birthday' in data:  # If the key 'birthday' exist then record must have type : contact
+            data.update({'type':'contact'})
         binding.with_context(connector_no_export=True).write(data)
         _logger.debug('%d updated from shopware %s', binding, self.shopware_id)
         return
